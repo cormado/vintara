@@ -64,3 +64,13 @@ img {
     margin-top: 20px;
     display: block;
 }
+
+/* Estilos para la imagen en el head */
+.header-image {
+    width: 100px;
+    height: auto;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    animation: fadeIn 1.5s ease-in-out;
+}
