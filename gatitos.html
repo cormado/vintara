@@ -19,9 +19,14 @@
     </style>
 </head>
 <body>
-    <video autoplay loop controls playsinline>
+    <video id="video" autoplay loop controls playsinline>
         <source src="gatitos.mp4" type="video/mp4">
         Tu navegador no soporta la reproducción de videos.
     </video>
+    <script>
+        document.getElementById('video').addEventListener('ended', function() {
+            window.location.href = 'discord.html';
+        });
+    </script>
 </body>
 </html>
