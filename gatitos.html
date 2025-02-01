@@ -25,9 +25,7 @@
     </video>
     <script>
         document.getElementById('video').addEventListener('ended', function() {
-            setTimeout(function() {
-                window.location.href = 'discord.html';
-            }, 1000); // Redirige después de 1 segundo
+            window.location.replace('discord.html');
         });
     </script>
 </body>
