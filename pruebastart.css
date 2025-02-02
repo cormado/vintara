@@ -1,0 +1,46 @@
+/* Importar fuentes modernas */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+/* Estilos generales */
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: url('fondo.gif');
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+    font-family: 'Orbitron', sans-serif;
+    text-align: center;
+}
+
+/* Estilos para la imagen del logo */
+.header-image {
+    max-width: 300px;
+    display: block;
+    margin: 20px auto;
+}
+
+/* Estilos para el texto principal */
+.font-large {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+/* Estilos para el texto de instrucciones */
+.font-medium {
+    font-size: 1.5rem;
+    margin-top: 10px;
+    font-family: 'Orbitron', sans-serif;
+    color: #ddd;
+}
+
+/* Estilos para la imagen interactiva */
+.trigger-image {
+    width: 960px;
+    height: 540px;
+    margin-top: 30px;
+}
