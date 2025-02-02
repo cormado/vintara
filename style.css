@@ -5,12 +5,13 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #000;
     background-image: url('fondo.gif');
     background-size: cover;
     background-position: center;
     color: #fff;
     font-family: Arial, sans-serif;
+    text-align: center;
+    animation: fadeIn 1.5s ease-in-out;
 }
 
 /* Animación de entrada */
@@ -25,52 +26,41 @@ body {
     }
 }
 
-/* Animación de la imagen */
-@keyframes scaleIn {
-    0% {
-        opacity: 0;
-        transform: scale(0.5) rotate(-10deg);
-    }
-    50% {
-        opacity: 0.5;
-        transform: scale(1.1) rotate(5deg);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1) rotate(0deg);
-    }
-}
-
-/* Estilos para el texto */
-font {
-    animation: fadeIn 1.5s ease-in-out;
-}
-
-font[size="5"] {
-    font-size: 2rem;
-    font-weight: bold;
-}
-
-font[size="1"] {
-    font-size: 0.75rem;
-    opacity: 0.7;
-}
-
-/* Estilos para la imagen */
+/* Estilos para el logo */
 img {
-    animation: scaleIn 1.5s ease-in-out;
-    max-width: 100%;
-    height: auto;
-    margin-top: 20px;
-    display: block;
+    max-width: 300px;
+    animation: fadeIn 1.5s ease-in-out;
 }
 
-/* Estilos para la imagen en el head */
-.header-image {
-    width: 100px;
-    height: auto;
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    animation: fadeIn 1.5s ease-in-out;
+/* Estilos para el título */
+h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+}
+
+/* Separación del texto antes del botón */
+p {
+    margin-bottom: 20px;
+}
+
+/* Botón de jugar */
+@import url('https://fonts.googleapis.com/css2?family=Days+One&display=swap');
+
+button {
+    background-color: #ffffff;
+    color: #000;
+    font-size: 1.5rem;
+    padding: 20px 40px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Days One', sans-serif;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-top: 20px;
+}
+
+button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
 }
