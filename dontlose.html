@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dont lose the button | Vintara</title>
+    <link rel="stylesheet" href="game1.css">
+</head>
+<body>
+    <header><p aling="center"><a href="index.html"><img src="home.png" height="40" width="40"></a></p></header>
+    <div id="start-screen">
+        <h1>DONT LOSE THE BUTTON</h1>
+        <br>
+        <button id="start-button">Play</button>
+        <br><br><br>
+        <footer><font color="#808080">Vintara</font></footer>
+    </div>
+    <div id="game-container">
+        <button id="hidden-button"></button>
+        <div id="rank-display">Bronze 1</div>
+    </div>
+
+    <script>
+        const startScreen = document.getElementById('start-screen');
+        const gameContainer = document.getElementById('game-container');
+        const startButton = document.getElementById('start-button');
+        const hiddenButton = document.getElementById('hidden-button');
+        const rankDisplay = document.getElementById('rank-display');
+
+        let score = 0;
+        let buttonSize = 40;
+        let opacityTimeout;
+
+        const ranks = [
+            {name: 'Bronze 1', color: '#5c4033'},
+            {name: 'Bronze 2', color: '#5c4033'},
+            {name: 'Bronze 3', color: '#5c4033'},
+            {name: 'Silver 1', color: '#4a5d6e'},
+            {name: 'Silver 2', color: '#4a5d6e'},
+            {name: 'Silver 3', color: '#4a5d6e'},
+            {name: 'Platinum 1', color: '#3a5f5f'},
+            {name: 'Platinum 2', color: '#3a5f5f'},
+            {name: 'Platinum 3', color: '#3a5f5f'},
+            {name: 'Diamond 1', color: '#2d4a7a'},
+            {name: 'Diamond 2', color: '#2d4a7a'},
+            {name: 'Diamond 3', color: '#2d4a7a'},
+            {name: 'Master 1', color: '#5e2d79'},
+            {name: 'Master 2', color: '#5e2d79'},
+            {name: 'Master 3', color: '#5e2d79'},
+            {name: 'Grand Master 1', color: '#8b1e1e'},
+            {name: 'Grand Master 2', color: '#8b1e1e'},
+            {name: 'Grand Master 3', color: '#8b1e1e'},
+            {name: 'GOD', color: '#D8B910'}
+        ];
+
+        startButton.addEventListener('click', startGame);
+
+        function startGame() {
+            startScreen.style.display = 'none';
+            gameContainer.style.display = 'block';
+            positionButton();
+            updateRank();
+        }
+
+        function positionButton() {
+            const maxX = gameContainer.offsetWidth - buttonSize;
+            const maxY = gameContainer.offsetHeight - buttonSize;
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+
+            hiddenButton.style.width = `${buttonSize}px`;
+            hiddenButton.style.height = `${buttonSize}px`;
+            hiddenButton.style.left = `${randomX}px`;
+            hiddenButton.style.top = `${randomY}px`;
+            hiddenButton.style.opacity = '0';
+        }
+
+        function updateRank() {
+            const rankIndex = Math.min(Math.floor(score / 2), ranks.length - 1);
+            rankDisplay.textContent = ranks[rankIndex].name;
+            rankDisplay.style.backgroundColor = ranks[rankIndex].color;
+        }
+
+        gameContainer.addEventListener('mousemove', (e) => {
+            const rect = hiddenButton.getBoundingClientRect();
+            const buttonX = rect.left + buttonSize / 2;
+            const buttonY = rect.top + buttonSize / 2;
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+            const distance = Math.sqrt((mouseX - buttonX) ** 2 + (mouseY - buttonY) ** 2);
+
+            clearTimeout(opacityTimeout);
+            if (distance < 40) {
+                opacityTimeout = setTimeout(() => {
+                    hiddenButton.style.opacity = '1';
+                }, 100); // Retraso de 200ms
+            } else {
+                opacityTimeout = setTimeout(() => {
+                    hiddenButton.style.opacity = '0';
+                }, 50);
+            }
+        });
+
+        hiddenButton.addEventListener('click', () => {
+            score++;
+            buttonSize = Math.max(10, 40 - Math.floor(score / 2) * 2);
+            positionButton();
+            updateRank();
+        });
+    </script>
+</body>
+</html>
