@@ -250,7 +250,7 @@
             <button id="health-button" class="shop-button" onclick="buyHealthBoost()">Health Boost: Level 1 ($800)</button>
         </div>
     </div>
-    <div id="game-over">
+<div id="game-over">
         <p>You Died</p>
         <p><button onclick="location.reload()">Play Again</button></p>
     </div>
@@ -276,13 +276,12 @@
         let zombiesSpawned = 0;
         let zombieGoal = 2;
         let damage = 1;
-        let extraMoney = 0; // Dinero extra por zombi
+        let extraMoney = 0;
         let baseSpawnRate = 1000;
         let gameActive = false;
         let maxHealth = 200;
         let playerHealth = maxHealth;
 
-        // Niveles y precios de las mejoras
         let damageLevel = 0;
         const damagePrices = [500, 700, 900, 1000, 2000];
         let moneyLevel = 0;
@@ -305,7 +304,7 @@
             const shopRect = document.getElementById('shop').getBoundingClientRect();
             const zombie = document.createElement('div');
             const isBossRound = round % 10 === 0;
-            const isBoss = isBossRound && zombiesSpawned === 0; // Boss solo en el primer spawn de la ronda
+            const isBoss = isBossRound && zombiesSpawned === 0;
             zombie.className = isBoss ? 'zombie boss' : 'zombie';
 
             let x, y;
@@ -335,7 +334,7 @@
                 healthBar.style.width = `${(health / maxHealthZombie) * (isBoss ? 120 : 60)}px`;
 
                 if (health <= 0) {
-                    money += 10 + (round * 2) + (isBoss ? 50 : extraMoney); // Dinero base + por ronda + extra por mejora
+                    money += 10 + (round * 2) + (isBoss ? 50 : extraMoney);
                     moneyDisplay.textContent = money;
                     gameArea.removeChild(zombie);
                     zombiesKilled++;
@@ -362,7 +361,7 @@
             roundDisplay.textContent = round;
             zombiesKilled = 0;
             zombiesSpawned = 0;
-            zombieGoal = round * 2; // Siempre zombis normales, el boss es adicional
+            zombieGoal = round * 2;
             zombieGoalDisplay.textContent = zombieGoal;
             zombieCountDisplay.textContent = zombiesKilled;
             spawnZombies();
@@ -382,7 +381,7 @@
             if (moneyLevel < 4 && money >= moneyPrices[moneyLevel]) {
                 money -= moneyPrices[moneyLevel];
                 moneyLevel++;
-                extraMoney += 5; // Incremento fijo por nivel
+                extraMoney += 5;
                 moneyDisplay.textContent = money;
                 updateShopButtons();
             }
@@ -445,7 +444,7 @@
 
         function endGame() {
             gameActive = false;
-            gameOver.style.display = 'flex';
+            gameOver.style.display = 'block'; /* Cambiado a block para asegurar visibilidad */
             music.pause();
             gameArea.style.display = 'none';
         }
