@@ -64,26 +64,38 @@
 
         .zombie {
             position: absolute;
-            width: 80px; /* Aumentado para la imagen */
+            width: 80px;
             height: 80px;
             background: url('https://cdn11.bigcommerce.com/s-j1baj4lsns/images/stencil/1280x1280/products/12835/8395/zombie__91765.1544992583.png?c=2') no-repeat center;
             background-size: contain;
             cursor: crosshair;
-            animation: zombieWalk 1.5s infinite; /* Animación de "caminar" */
+            animation: zombieWalk 1.5s infinite;
             z-index: 4;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5)); /* Sombra añadida a la imagen */
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
         }
+
+        .boss {
+            background: url('https://i.ebayimg.com/images/g/YMIAAOSw2sZhKB47/s-l400.png') no-repeat center;
+            background-size: contain;
+            width: 160px;
+            height: 160px;
+            animation: zombieWalk 2s infinite;
+}
 
         .health-bar {
             position: absolute;
-            width: 60px; /* Ajustado al tamaño del zombie */
+            width: 60px;
             height: 5px;
-            background: #ff4444; /* Rojo más oscuro para mejor contraste */
+            background: #ff4444;
             top: -10px;
             left: 0;
             transition: width 0.2s;
             z-index: 2;
-            border: 1px solid #000; /* Borde negro para definición */
+            border: 1px solid #000;
+        }
+
+        .boss .health-bar {
+            width: 120px; /* Barra de salud más grande para el boss */
         }
 
         #player-health-bar {
@@ -92,10 +104,10 @@
             left: 10px;
             width: 200px;
             height: 20px;
-            background: #ff4444; /* Color más oscuro para consistencia */
+            background: #ff4444;
             z-index: 5;
             transition: width 0.2s;
-            border: 1px solid #fff; /* Borde blanco para destacar */
+            border: 1px solid #fff;
         }
 
         #hud {
@@ -234,20 +246,27 @@
 
             const shopRect = document.getElementById('shop').getBoundingClientRect();
             const zombie = document.createElement('div');
-            zombie.className = 'zombie';
-            
+            const isBossRound = round % 10 === 0 && zombiesSpawned === 0; // Boss aparece al inicio de rondas 10, 20, 30...
+            zombie.className = isBossRound ? 'zombie boss' : 'zombie';
+
             let x, y;
             do {
-                x = Math.random() * (window.innerWidth - 60); // Ajustado al nuevo tamaño
-                y = Math.random() * (window.innerHeight - 60);
-            } while (x + 60 > shopRect.left && x < shopRect.right && 
-                    y + 60 > shopRect.top && y < shopRect.bottom);
+                x = Math.random() * (window.innerWidth - (isBossRound ? 160 : 60));
+                y = Math.random() * (window.innerHeight - (isBossRound ? 160 : 60));
+            } while (x + (isBossRound ? 160 : 60) > shopRect.left && x < shopRect.right && 
+                    y + (isBossRound ? 160 : 60) > shopRect.top && y < shopRect.bottom);
 
             zombie.style.left = x + 'px';
             zombie.style.top = y + 'px';
-            
-            let health = 3 + round;
-            const maxHealth = health;
+
+            // Vida base y daño escalan con la ronda
+            let baseHealth = 3 + round;
+            let zombieDamage = 0.5 + (round * 0.1); // Daño aumenta con la ronda (0.5 base + 0.1 por ronda)
+
+            // Si es boss, triplica vida y daño
+            let health = isBossRound ? baseHealth * 3 : baseHealth;
+            zombieDamage = isBossRound ? zombieDamage * 3 : zombieDamage;
+            const maxHealthZombie = health;
 
             const healthBar = document.createElement('div');
             healthBar.className = 'health-bar';
@@ -257,10 +276,10 @@
             zombie.addEventListener('click', () => {
                 health -= damage;
                 healthBar.style.display = 'block';
-                healthBar.style.width = `${(health / maxHealth) * 60}px`; // Ajustado al nuevo tamaño
+                healthBar.style.width = `${(health / maxHealthZombie) * (isBossRound ? 120 : 60)}px`;
 
                 if (health <= 0) {
-                    money += 10 * damage;
+                    money += isBossRound ? 50 * damage : 10 * damage; // Más dinero por matar al boss
                     moneyDisplay.textContent = money;
                     gameArea.removeChild(zombie);
                     zombiesKilled++;
@@ -287,7 +306,7 @@
             roundDisplay.textContent = round;
             zombiesKilled = 0;
             zombiesSpawned = 0;
-            zombieGoal = round * 2;
+            zombieGoal = round % 10 === 0 ? 1 : round * 2; // Solo 1 zombie (el boss) en rondas de boss
             zombieGoalDisplay.textContent = zombieGoal;
             zombieCountDisplay.textContent = zombiesKilled;
             spawnZombies();
@@ -338,8 +357,13 @@
         function startHealthDrain() {
             setInterval(() => {
                 if (gameActive) {
-                    const zombieCount = document.getElementsByClassName('zombie').length;
-                    playerHealth -= zombieCount * 0.5;
+                    const zombies = document.getElementsByClassName('zombie');
+                    let totalDamage = 0;
+                    for (let zombie of zombies) {
+                        const isBoss = zombie.classList.contains('boss');
+                        totalDamage += isBoss ? (0.5 + (round * 0.1)) * 3 : (0.5 + (round * 0.1));
+                    }
+                    playerHealth -= totalDamage;
                     updateHealthBar();
                 }
             }, 1000);
