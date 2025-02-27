@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Call Of Zombies</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #1a1a1a;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+
+        #start-screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        #title {
+            color: #69ff44;
+            font-size: 90px;
+            text-shadow: 2px 2px 4px #a0a0a0;
+            animation: flicker 2s infinite;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        #play-button {
+            padding: 15px 30px;
+            font-size: 24px;
+            background: #333;
+            color: #fff;
+            border: 2px solid #ffffff;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        #play-button:hover {
+            background: #00b909;
+        }
+
+        #game-area {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        #background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: url('https://th.bing.com/th/id/OIP.yOATV4-PYHDcuShaXHO16gHaEu?rs=1&pid=ImgDetMain');
+            background-size: cover;
+            filter: blur(5px) brightness(0.8);
+            z-index: 0;
+        }
+
+        .zombie {
+            position: absolute;
+            width: 80px; /* Aumentado para la imagen */
+            height: 80px;
+            background: url('https://cdn11.bigcommerce.com/s-j1baj4lsns/images/stencil/1280x1280/products/12835/8395/zombie__91765.1544992583.png?c=2') no-repeat center;
+            background-size: contain;
+            cursor: crosshair;
+            animation: zombieWalk 1.5s infinite; /* Animación de "caminar" */
+            z-index: 4;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5)); /* Sombra añadida a la imagen */
+        }
+
+        .health-bar {
+            position: absolute;
+            width: 60px; /* Ajustado al tamaño del zombie */
+            height: 5px;
+            background: #ff4444; /* Rojo más oscuro para mejor contraste */
+            top: -10px;
+            left: 0;
+            transition: width 0.2s;
+            z-index: 2;
+            border: 1px solid #000; /* Borde negro para definición */
+        }
+
+        #player-health-bar {
+            position: absolute;
+            top: 70px;
+            left: 10px;
+            width: 200px;
+            height: 20px;
+            background: #ff4444; /* Color más oscuro para consistencia */
+            z-index: 5;
+            transition: width 0.2s;
+            border: 1px solid #fff; /* Borde blanco para destacar */
+        }
+
+        #hud {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            text-shadow: 1px 1px 2px #000;
+            z-index: 5;
+        }
+
+        #shop {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border: 1px solid #ff4444;
+            z-index: 3;
+        }
+
+        .shop-button {
+            background: #333;
+            color: #fff;
+            border: 1px solid #fff;
+            padding: 5px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        #game-over {
+            display: none;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            color: #ff4444;
+            font-size: 72px;
+            text-align: center;
+            line-height: 100vh;
+            z-index: 20;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes zombieWalk {
+            0% { transform: translateY(0) rotate(2deg); }
+            50% { transform: translateY(-5px) rotate(-2deg); }
+            100% { transform: translateY(0) rotate(2deg); }
+        }
+
+        #game-over button {
+            padding: 10px 20px;
+            font-size: 24px;
+            background: #ffffff;
+            color: #696969;
+            border: 2px solid #ffffff;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-block;
+            margin: 20px auto;
+        }
+
+        #game-over button:hover {
+            background: #33ff00;
+        }
+    </style>
+</head>
+<body>
+    <div id="start-screen">
+        <h1 id="title">CALL OF ZOMBIES</h1>
+        <button id="play-button">Play</button>
+    </div>
+    <div id="game-area">
+        <div id="background"></div>
+        <audio id="background-music" loop>
+            <source src="musica.mp3" type="audio/mpeg">
+        </audio>
+        <div id="hud">
+            Money: $<span id="money">0</span><br>
+            Round: <span id="round">1</span><br>
+            Zombies: <span id="zombie-count">0</span>/<span id="zombie-goal">2</span>
+        </div>
+        <div id="player-health-bar"></div>
+        <div id="shop">
+            <button class="shop-button" onclick="buyDamage()">More Damage ($500)</button><br>
+            <button class="shop-button" onclick="buySpeed()">Faster Shots ($1000)</button><br>
+            <button class="shop-button" onclick="buyMedkit()">Medkit ($100)</button><br>
+            <button class="shop-button" onclick="buyHealthBoost()">Health Boost ($800)</button>
+        </div>
+    </div>
+    <div id="game-over">
+        <p>You Died</p>
+        <p><button onclick="location.reload()">Play Again</button></p>
+    </div>
+
+    <script>
+        const gameArea = document.getElementById('game-area');
+        const startScreen = document.getElementById('start-screen');
+        const playButton = document.getElementById('play-button');
+        const music = document.getElementById('background-music');
+        const moneyDisplay = document.getElementById('money');
+        const roundDisplay = document.getElementById('round');
+        const zombieCountDisplay = document.getElementById('zombie-count');
+        const zombieGoalDisplay = document.getElementById('zombie-goal');
+        const gameOver = document.getElementById('game-over');
+        const playerHealthBar = document.getElementById('player-health-bar');
+
+        let money = 0;
+        let round = 1;
+        let zombiesKilled = 0;
+        let zombiesSpawned = 0;
+        let zombieGoal = 2;
+        let damage = 1;
+        let baseSpawnRate = 1000;
+        let gameActive = false;
+        let maxHealth = 200;
+        let playerHealth = maxHealth;
+
+        playButton.addEventListener('click', () => {
+            startScreen.style.display = 'none';
+            music.play();
+            gameActive = true;
+            spawnZombies();
+            updateHealthBar();
+            startHealthDrain();
+        });
+
+        function spawnZombies() {
+            if (!gameActive || zombiesSpawned >= zombieGoal) return;
+
+            const shopRect = document.getElementById('shop').getBoundingClientRect();
+            const zombie = document.createElement('div');
+            zombie.className = 'zombie';
+            
+            let x, y;
+            do {
+                x = Math.random() * (window.innerWidth - 60); // Ajustado al nuevo tamaño
+                y = Math.random() * (window.innerHeight - 60);
+            } while (x + 60 > shopRect.left && x < shopRect.right && 
+                    y + 60 > shopRect.top && y < shopRect.bottom);
+
+            zombie.style.left = x + 'px';
+            zombie.style.top = y + 'px';
+            
+            let health = 3 + round;
+            const maxHealth = health;
+
+            const healthBar = document.createElement('div');
+            healthBar.className = 'health-bar';
+            zombie.appendChild(healthBar);
+            healthBar.style.display = 'none';
+
+            zombie.addEventListener('click', () => {
+                health -= damage;
+                healthBar.style.display = 'block';
+                healthBar.style.width = `${(health / maxHealth) * 60}px`; // Ajustado al nuevo tamaño
+
+                if (health <= 0) {
+                    money += 10 * damage;
+                    moneyDisplay.textContent = money;
+                    gameArea.removeChild(zombie);
+                    zombiesKilled++;
+                    zombieCountDisplay.textContent = zombiesKilled;
+
+                    if (zombiesKilled >= zombieGoal) {
+                        nextRound();
+                    }
+                }
+            });
+
+            gameArea.appendChild(zombie);
+            zombiesSpawned++;
+            zombieCountDisplay.textContent = zombiesKilled;
+
+            const spawnRate = Math.max(200, baseSpawnRate - (round * 50));
+            if (zombiesSpawned < zombieGoal) {
+                setTimeout(spawnZombies, spawnRate);
+            }
+        }
+
+        function nextRound() {
+            round++;
+            roundDisplay.textContent = round;
+            zombiesKilled = 0;
+            zombiesSpawned = 0;
+            zombieGoal = round * 2;
+            zombieGoalDisplay.textContent = zombieGoal;
+            zombieCountDisplay.textContent = zombiesKilled;
+            spawnZombies();
+        }
+
+        function buyDamage() {
+            if (money >= 500) {
+                money -= 500;
+                damage++;
+                moneyDisplay.textContent = money;
+            }
+        }
+
+        function buySpeed() {
+            if (money >= 1000 && baseSpawnRate > 300) {
+                money -= 1000;
+                baseSpawnRate -= 100;
+                moneyDisplay.textContent = money;
+            }
+        }
+
+        function buyMedkit() {
+            if (money >= 100) {
+                money -= 100;
+                playerHealth = maxHealth;
+                moneyDisplay.textContent = money;
+                updateHealthBar();
+            }
+        }
+
+        function buyHealthBoost() {
+            if (money >= 800) {
+                money -= 800;
+                maxHealth += 50;
+                playerHealth += 50;
+                moneyDisplay.textContent = money;
+                updateHealthBar();
+            }
+        }
+
+        function updateHealthBar() {
+            playerHealthBar.style.width = `${(playerHealth / maxHealth) * 200}px`;
+            if (playerHealth <= 0) {
+                endGame();
+            }
+        }
+
+        function startHealthDrain() {
+            setInterval(() => {
+                if (gameActive) {
+                    const zombieCount = document.getElementsByClassName('zombie').length;
+                    playerHealth -= zombieCount * 0.5;
+                    updateHealthBar();
+                }
+            }, 1000);
+        }
+
+        function endGame() {
+            gameActive = false;
+            gameOver.style.display = 'flex';
+            music.pause();
+            gameArea.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

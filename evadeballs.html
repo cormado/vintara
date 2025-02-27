@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evade Balls - Under Construction</title>
+    <title>Evade Balls | Vintara</title>
     <style>
         body {
             display: flex;
@@ -26,12 +26,221 @@
         h1 {
             color: #ffffff;
         }
+        body {
+                margin: 0;
+                overflow: hidden;
+                background-color: #f0f0f0;
+            }
+            .ball {
+                position: absolute;
+                border-radius: 50%;
+                width: 50px;
+                height: 50px;
+            }
+            /* Estilos para la pantalla de inicio */
+            #startScreen {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                text-align: center;
+                font-size: 36px;
+                color: #333;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+            #startScreen button {
+                font-size: 24px;
+                padding: 10px 20px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                cursor: pointer;
+                margin-top: 20px;
+            }
+            #startScreen button:hover {
+                background-color: #45a049;
+            }
+            #gameOverMessage {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 36px;
+                color: red;
+                display: none;
+            }
     </style>
 </head>
 <body>
     <header>
         <a href="index.html"><img src="home.png" height="40" width="40" alt="Home"></a>
     </header>
-    <h1>⛔ UNDER CONSTRUCTION ⛔</h1>
+    <body>
+    
+    <div id="startScreen">
+        <div>Evade The Balls</div>
+        <button onclick="startGame()">Play</button>
+    </div>
+    
+    <div id="gameOverMessage">Game Over</div>
+    
+    <script>
+        let gameOver = false;
+        let cursorX = 0;
+        let cursorY = 0;
+        let balls = [];
+    
+        // Función para iniciar el juego
+        function startGame() {
+            // Ocultar la pantalla de inicio
+            document.getElementById('startScreen').style.display = 'none';
+            
+            // Iniciar el juego
+            generateBalls();
+            createChasingBalls();
+        }
+    
+        // Función para generar bolas de colores aleatorios
+        function generateBalls() {
+            const numBalls = 30; // Número de bolas
+            const colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A6", "#FF9933"]; // Colores
+    
+            for (let i = 0; i < numBalls; i++) {
+                // Crear una bola
+                const ball = document.createElement('div');
+                ball.classList.add('ball');
+    
+                // Asignar un color aleatorio
+                ball.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    
+                // Posicionar la bola en la esquina inferior derecha
+                ball.style.left = window.innerWidth - 50 - (Math.random() * 200); // Desplazamiento aleatorio en X
+                ball.style.top = window.innerHeight - 50 - (Math.random() * 200); // Desplazamiento aleatorio en Y
+    
+                // Generar una velocidad aleatoria para la bola (más rápida)
+                ball.speedX = Math.random() * 10 - 5;  // Velocidad más alta en el eje X
+                ball.speedY = Math.random() * 10 - 5;  // Velocidad más alta en el eje Y
+    
+                // Añadir la bola al body
+                document.body.appendChild(ball);
+    
+                // Guardar la bola para verificar la colisión
+                balls.push(ball);
+    
+                // Animar la bola para que se mueva por la pantalla
+                moveBall(ball);
+            }
+        }
+    
+        // Función para mover una bola de forma aleatoria y hacerla rebotar en los bordes
+        function moveBall(ball) {
+            function animate() {
+                if (gameOver) return;
+    
+                let ballRect = ball.getBoundingClientRect();
+                let xPos = ballRect.left + ball.speedX;
+                let yPos = ballRect.top + ball.speedY;
+    
+                // Si la bola llega a los bordes de la pantalla, cambiar la dirección
+                if (xPos <= 0 || xPos >= window.innerWidth - 50) {
+                    ball.speedX = -ball.speedX;  // Cambiar la dirección en el eje X
+                }
+    
+                if (yPos <= 0 || yPos >= window.innerHeight - 50) {
+                    ball.speedY = -ball.speedY;  // Cambiar la dirección en el eje Y
+                }
+    
+                // Mover la bola a la nueva posición
+                ball.style.left = xPos + 'px';
+                ball.style.top = yPos + 'px';
+    
+                // Comprobar si la bola ha tocado el cursor
+                checkCollisionWithCursor(ball);
+    
+                // Llamar a la función de nuevo para animar el movimiento
+                requestAnimationFrame(animate);
+            }
+    
+            animate(); // Iniciar animación
+        }
+    
+        // Función para comprobar la colisión de las bolas con el cursor
+        function checkCollisionWithCursor(ball) {
+            const ballRect = ball.getBoundingClientRect();
+            const dx = cursorX - (ballRect.left + ballRect.width / 2);
+            const dy = cursorY - (ballRect.top + ballRect.height / 2);
+            const distance = Math.sqrt(dx * dx + dy * dy);
+    
+            // Si la distancia es menor que el radio de la bola (25px), entonces es una colisión
+            if (distance < 25) {
+                gameOver = true;
+                document.getElementById('gameOverMessage').style.display = 'block';
+            }
+        }
+    
+        // Función para crear bolas que persiguen el cursor
+        function createChasingBalls() {
+            const chasingBalls = 3; // Número de bolas que persiguen el cursor
+    
+            for (let i = 0; i < chasingBalls; i++) {
+                const ball = document.createElement('div');
+                ball.classList.add('ball');
+                ball.style.backgroundColor = '#FF00FF'; // Color de las bolas perseguidoras
+    
+                // Posicionar la bola en una posición inicial aleatoria
+                ball.style.left = Math.random() * window.innerWidth + 'px';
+                ball.style.top = Math.random() * window.innerHeight + 'px';
+    
+                // Generar una velocidad aleatoria para la bola perseguidora (más rápida)
+                ball.speedX = Math.random() * 6 + 3;  // Velocidad más alta en el eje X
+                ball.speedY = Math.random() * 6 + 3;  // Velocidad más alta en el eje Y
+    
+                // Añadir la bola al body
+                document.body.appendChild(ball);
+    
+                // Llamar a la función que mueve la bola para que persiga el cursor
+                moveChasingBall(ball);
+            }
+        }
+    
+        // Función para hacer que las bolas persigan al cursor
+        function moveChasingBall(ball) {
+            function animate() {
+                if (gameOver) return;
+    
+                const ballRect = ball.getBoundingClientRect();
+    
+                // Calcular la distancia entre la bola y el cursor
+                const dx = cursorX - (ballRect.left + ballRect.width / 2);
+                const dy = cursorY - (ballRect.top + ballRect.height / 2);
+                const distance = Math.sqrt(dx * dx + dy * dy);
+    
+                // Normalizar la dirección y mover la bola hacia el cursor
+                const moveX = (dx / distance) * ball.speedX;
+                const moveY = (dy / distance) * ball.speedY;
+    
+                // Mover la bola
+                ball.style.left = ballRect.left + moveX + 'px';
+                ball.style.top = ballRect.top + moveY + 'px';
+    
+                // Comprobar si la bola ha tocado el cursor
+                checkCollisionWithCursor(ball);
+    
+                requestAnimationFrame(animate);
+            }
+    
+            animate(); // Iniciar animación
+        }
+    
+        // Actualizar la posición del cursor
+        document.addEventListener('mousemove', function(event) {
+            cursorX = event.clientX;
+            cursorY = event.clientY;
+        });
+    
+    </script>
 </body>
 </html>
