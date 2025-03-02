@@ -7,8 +7,8 @@
         body {
             margin: 0;
             padding: 0;
-            background: #1a1a1a;
-            font-family: 'Courier New', monospace;
+            background: #0d0d0d;
+            font-family: 'Arial', sans-serif;
             overflow: hidden;
         }
 
@@ -16,7 +16,7 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: linear-gradient(180deg, rgba(20, 20, 20, 0.95), rgba(0, 50, 0, 0.9));
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -25,31 +25,37 @@
         }
 
         #title {
-            color: #69ff44;
-            font-size: 90px;
-            text-shadow: 2px 2px 4px #a0a0a0;
-            animation: flicker 2s infinite;
-            font-family: 'Times New Roman', Times, serif;
+            color: #33ff33;
+            font-size: 100px;
+            text-shadow: 0 0 15px #33ff33, 0 0 30px #ff4444;
+            animation: glow 1.5s infinite alternate;
+            font-family: 'Impact', sans-serif;
+            letter-spacing: 2px;
         }
 
         #play-button {
-            padding: 15px 30px;
-            font-size: 24px;
-            background: #333;
+            padding: 20px 40px;
+            font-size: 28px;
+            background: #1a1a1a;
             color: #fff;
-            border: 2px solid #ffffff;
+            border: 3px solid #33ff33;
+            border-radius: 10px;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(51, 255, 51, 0.5);
         }
 
         #play-button:hover {
-            background: #00b909;
+            background: #33ff33;
+            color: #0d0d0d;
+            box-shadow: 0 0 20px rgba(51, 255, 51, 1);
         }
 
         #game-area {
             width: 100vw;
             height: 100vh;
             position: relative;
+            background: #1a1a1a;
         }
 
         #background {
@@ -58,8 +64,9 @@
             height: 100%;
             background: url('https://th.bing.com/th/id/OIP.yOATV4-PYHDcuShaXHO16gHaEu?rs=1&pid=ImgDetMain');
             background-size: cover;
-            filter: blur(5px) brightness(0.8);
+            filter: blur(3px) brightness(0.6);
             z-index: 0;
+            opacity: 0.8;
         }
 
         .zombie {
@@ -69,161 +76,190 @@
             background: url('https://cdn11.bigcommerce.com/s-j1baj4lsns/images/stencil/1280x1280/products/12835/8395/zombie__91765.1544992583.png?c=2') no-repeat center;
             background-size: contain;
             cursor: crosshair;
-            animation: zombieWalk 1.5s infinite;
+            animation: zombieWalk 1.5s infinite ease-in-out;
             z-index: 4;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+            filter: drop-shadow(0 0 10px rgba(168, 168, 168, 0.7));
         }
 
         .boss {
-            background: url('https://i.ebayimg.com/images/g/YMIAAOSw2sZhKB47/s-l400.png') no-repeat center;
-            background-size: contain;
             width: 160px;
             height: 160px;
-            animation: zombieWalk 2s infinite;
-}
+            animation: zombieWalk 2s infinite ease-in-out;
+            filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.9));
+        }
+
+        .power-up {
+            position: absolute;
+            width: 75px;
+            height: 75px;
+            cursor: pointer;
+            z-index: 5;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.7));
+            animation: float 2s infinite ease-in-out;
+        }
 
         .health-bar {
             position: absolute;
             width: 60px;
-            height: 5px;
-            background: #ff4444;
-            top: -10px;
-            left: 0;
-            transition: width 0.2s;
+            height: 8px;
+            background: linear-gradient(90deg, #ff4444, #ff6666);
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: width 0.2s ease;
             z-index: 2;
             border: 1px solid #000;
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(255, 68, 68, 0.8);
         }
 
         .boss .health-bar {
             width: 120px;
+            height: 10px;
         }
 
         #player-health-bar {
             position: absolute;
-            top: 70px;
-            left: 10px;
-            width: 200px;
-            height: 20px;
-            background: #ff4444;
+            top: 100px;
+            left: 20px;
+            width: 250px;
+            height: 25px;
+            background: linear-gradient(90deg, #33ff33, #66ff66);
             z-index: 5;
-            transition: width 0.2s;
-            border: 1px solid #fff;
+            transition: width 0.2s ease, background 0.3s ease;
+            border: 2px solid #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(51, 255, 51, 0.7);
         }
 
         #hud {
             position: absolute;
             top: 10px;
-            left: 10px;
+            left: 20px;
             color: #fff;
-            text-shadow: 1px 1px 2px #000;
+            font-size: 20px;
+            text-shadow: 0 0 5px #000;
             z-index: 5;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #33ff33;
         }
 
         #shop {
             position: absolute;
             top: 10px;
-            right: 10px;
+            right: 20px;
             color: #fff;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px;
-            border: 1px solid #ff4444;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border: 2px solid #ff4444;
+            border-radius: 10px;
             z-index: 3;
+            box-shadow: 0 0 15px rgba(255, 68, 68, 0.5);
         }
 
         .shop-button {
-            background: #333;
+            background: #1a1a1a;
             color: #fff;
-            border: 1px solid #fff;
-            padding: 5px;
-            margin: 5px;
+            border: 2px solid #33ff33;
+            padding: 8px;
+            margin: 8px 0;
             cursor: pointer;
             width: 100%;
             text-align: center;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px rgba(51, 255, 51, 0.5);
+        }
+
+        .shop-button:hover {
+            background: #33ff33;
+            color: #0d0d0d;
+            box-shadow: 0 0 15px rgba(51, 255, 51, 1);
+        }
+
+        .power-up-display {
+            position: absolute;
+            right: 20px;
+            color: #fff;
+            font-size: 18px;
+            text-shadow: 0 0 5px #000;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #33ff33;
+            z-index: 5;
+            transition: bottom 0.3s ease; /* Transición suave al moverse */
         }
 
         #game-over {
             display: none;
             position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(20, 0, 0, 0.95), rgba(50, 0, 0, 0.9));
-            color: #ff4444;
-            font-size: 72px;
-            text-align: center;
-            line-height: 100vh;
+            background: linear-gradient(135deg, rgba(50, 0, 0, 0.95), rgba(100, 0, 0, 0.9));
             z-index: 20;
-            flex-direction: column;
-            justify-content: center;
-            text-shadow: 0 0 10px #ff4444, 0 0 20px #ff4444;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes flicker {
-            0% { opacity: 1; }
-            50% { opacity: 0.8; }
-            100% { opacity: 1; }
-        }
-
-        @keyframes zombieWalk {
-            0% { transform: translateY(0) rotate(2deg); }
-            50% { transform: translateY(-5px) rotate(-2deg); }
-            100% { transform: translateY(0) rotate(2deg); }
-        }
-
-        @keyframes pulse {
-            0% { text-shadow: 0 0 10px #ff4444, 0 0 20px #ff4444; }
-            50% { text-shadow: 0 0 15px #ff4444, 0 0 30px #ff4444; }
-            100% { text-shadow: 0 0 10px #ff4444, 0 0 20px #ff4444; }
-        }
-
-#game-over {
-            display: none;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(50, 0, 0, 0.95), rgba(100, 0, 0, 0.9)); /* Fondo rojo oscuro */
-            color: #ffffff; /* Texto blanco para contraste */
-            font-size: 72px;
             text-align: center;
-            z-index: 20;
-            flex-direction: column;
-            justify-content: center;
-            text-shadow: 0 0 10px #ff4444, 0 0 20px #ff4444, 0 0 30px #000; /* Sombra mixta para destacar */
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { text-shadow: 0 0 10px #ff4444, 0 0 20px #ff4444, 0 0 30px #000; }
-            50% { text-shadow: 0 0 15px #ff4444, 0 0 30px #ff4444, 0 0 40px #000; }
-            100% { text-shadow: 0 0 10px #ff4444, 0 0 20px #ff4444, 0 0 30px #000; }
+            padding-top: 20vh;
+            box-sizing: border-box;
         }
 
         #game-over p:first-child {
-            margin: 0;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.7); /* Fondo negro semitransparente detrás del texto */
+            color: #ffffff;
+            font-size: 80px;
+            margin: 0 0 30px 0;
+            padding: 20px 40px;
+            background: rgba(0, 0, 0, 0.8);
             display: inline-block;
-            border-radius: 10px;
+            border-radius: 15px;
+            text-shadow: 0 0 15px #ff4444, 0 0 30px #ff4444, 0 0 45px #000;
+            animation: pulse 2s infinite;
+            font-family: 'Impact', sans-serif;
+            letter-spacing: 2px;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #33ff33, 0 0 20px #ff4444; }
+            to { text-shadow: 0 0 20px #33ff33, 0 0 40px #ff4444; }
+        }
+
+        @keyframes zombieWalk {
+            0% { transform: translateY(0) rotate(3deg); }
+            50% { transform: translateY(-8px) rotate(-3deg); }
+            100% { transform: translateY(0) rotate(3deg); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { text-shadow: 0 0 15px #ff4444, 0 0 30px #ff4444, 0 0 45px #000; }
+            50% { text-shadow: 0 0 25px #ff4444, 0 0 50px #ff4444, 0 0 60px #000; }
+            100% { text-shadow: 0 0 15px #ff4444, 0 0 30px #ff4444, 0 0 45px #000; }
         }
 
         #game-over button {
-            padding: 10px 20px;
-            font-size: 24px;
-            background: #ffffff; /* Fondo blanco inicial */
-            color: #ff4444; /* Texto rojo para consistencia */
-            border: 2px solid #ff4444;
-            border-radius: 5px;
+            padding: 15px 30px;
+            font-size: 28px;
+            background: #ffffff;
+            color: #ff4444;
+            border: 3px solid #ff4444;
+            border-radius: 10px;
             cursor: pointer;
-            transition: 0.3s;
-            display: inline-block;
-            margin: 20px auto;
-            box-shadow: 0 0 10px rgba(255, 68, 68, 0.8);
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(255, 68, 68, 0.8);
         }
 
         #game-over button:hover {
-            background: #ff4444; /* Fondo rojo al pasar el mouse */
-            color: #ffffff; /* Texto blanco al pasar el mouse */
-            box-shadow: 0 0 20px rgba(255, 68, 68, 1);
+            background: #ff4444;
+            color: #ffffff;
+            box-shadow: 0 0 25px rgba(255, 68, 68, 1);
         }
     </style>
 </head>
@@ -250,7 +286,7 @@
             <button id="health-button" class="shop-button" onclick="buyHealthBoost()">Health Boost: Level 1 ($800)</button>
         </div>
     </div>
-<div id="game-over">
+    <div id="game-over">
         <p>You Died</p>
         <p><button onclick="location.reload()">Play Again</button></p>
     </div>
@@ -281,6 +317,9 @@
         let gameActive = false;
         let maxHealth = 200;
         let playerHealth = maxHealth;
+        let ultraModeActive = false;
+        let casinoActive = false;
+        let immortalActive = false;
 
         let damageLevel = 0;
         const damagePrices = [500, 700, 900, 1000, 2000];
@@ -289,6 +328,8 @@
         let healthLevel = 0;
         const healthPrices = [800, 1300, 1600, 2000, 4000];
 
+        let activePowerUps = []; // Lista para gestionar múltiples potenciadores
+
         playButton.addEventListener('click', () => {
             startScreen.style.display = 'none';
             music.play();
@@ -296,6 +337,7 @@
             spawnZombies();
             updateHealthBar();
             startHealthDrain();
+            spawnPowerUps();
         });
 
         function spawnZombies() {
@@ -329,12 +371,13 @@
             healthBar.style.display = 'none';
 
             zombie.addEventListener('click', () => {
-                health -= damage;
+                health -= ultraModeActive ? maxHealthZombie : damage;
                 healthBar.style.display = 'block';
                 healthBar.style.width = `${(health / maxHealthZombie) * (isBoss ? 120 : 60)}px`;
 
                 if (health <= 0) {
-                    money += 10 + (round * 2) + (isBoss ? 50 : extraMoney);
+                    const moneyEarned = (10 + (round * 2) + (isBoss ? 50 : extraMoney)) * (casinoActive ? 2 : 1);
+                    money += moneyEarned;
                     moneyDisplay.textContent = money;
                     gameArea.removeChild(zombie);
                     zombiesKilled++;
@@ -365,6 +408,127 @@
             zombieGoalDisplay.textContent = zombieGoal;
             zombieCountDisplay.textContent = zombiesKilled;
             spawnZombies();
+        }
+
+        function spawnPowerUps() {
+            if (!gameActive) return;
+
+            const powerUps = [
+                { name: 'Ultra Mode', image: 'ultram.png', effect: activateUltraMode },
+                { name: 'Casino', image: 'casino.png', effect: activateCasino },
+                { name: 'Skull', image: 'skull.png', effect: activateSkull },
+                { name: 'Inmortal', image: 'inmortal.png', effect: activateInmortal }
+            ];
+
+            setInterval(() => {
+                if (Math.random() < 0.1) {
+                    const powerUp = powerUps[Math.floor(Math.random() * powerUps.length)];
+                    const powerUpElement = document.createElement('div');
+                    powerUpElement.className = 'power-up';
+                    powerUpElement.style.background = `url('${powerUp.image}') no-repeat center`;
+                    powerUpElement.style.backgroundSize = 'contain';
+
+                    const shopRect = document.getElementById('shop').getBoundingClientRect();
+                    let x, y;
+                    do {
+                        x = Math.random() * (window.innerWidth - 75);
+                        y = Math.random() * (window.innerHeight - 75);
+                    } while (x + 75 > shopRect.left && x < shopRect.right && 
+                            y + 75 > shopRect.top && y < shopRect.bottom);
+
+                    powerUpElement.style.left = x + 'px';
+                    powerUpElement.style.top = y + 'px';
+
+                    powerUpElement.addEventListener('click', () => {
+                        const audio = new Audio(`${powerUp.image.replace('.png', '.mp3')}`);
+                        audio.play();
+                        powerUp.effect();
+                        gameArea.removeChild(powerUpElement);
+                    });
+
+                    gameArea.appendChild(powerUpElement);
+                    setTimeout(() => {
+                        if (powerUpElement.parentNode) gameArea.removeChild(powerUpElement);
+                    }, 10000);
+                }
+            }, 5000);
+        }
+
+        function activateUltraMode() {
+            ultraModeActive = true;
+            showPowerUpTimer('Ultra Mode', 20);
+            setTimeout(() => ultraModeActive = false, 20000);
+        }
+
+        function activateCasino() {
+            casinoActive = true;
+            showPowerUpTimer('Casino', 20);
+            setTimeout(() => casinoActive = false, 20000);
+        }
+
+        function activateSkull() {
+            const zombies = document.getElementsByClassName('zombie');
+            while (zombies.length > 0) {
+                const zombie = zombies[0];
+                money += (10 + (round * 2) + (zombie.classList.contains('boss') ? 50 : extraMoney));
+                gameArea.removeChild(zombie);
+                zombiesKilled++;
+            }
+            moneyDisplay.textContent = money;
+            zombieCountDisplay.textContent = zombiesKilled;
+            if (zombiesKilled >= zombieGoal) nextRound();
+        }
+
+        function activateInmortal() {
+            immortalActive = true;
+            playerHealth = maxHealth;
+            playerHealthBar.style.background = 'linear-gradient(90deg, #3333ff, #6666ff)';
+            updateHealthBar();
+            showPowerUpTimer('Inmortal', 20);
+            setTimeout(() => {
+                immortalActive = false;
+                playerHealthBar.style.background = 'linear-gradient(90deg, #33ff33, #66ff66)';
+            }, 20000);
+        }
+
+        function showPowerUpTimer(name, duration) {
+            const powerUpDisplay = document.createElement('div');
+            powerUpDisplay.className = 'power-up-display';
+            let timeLeft = duration;
+            powerUpDisplay.textContent = `${name}: ${timeLeft}s`;
+            gameArea.appendChild(powerUpDisplay);
+
+            // Posicionar según los potenciadores activos
+            const height = 40; // Altura aproximada de cada contador (incluye padding y bordes)
+            powerUpDisplay.style.bottom = `${10 + (activePowerUps.length * height)}px`;
+
+            activePowerUps.push({ element: powerUpDisplay, name: name });
+
+            const timer = setInterval(() => {
+                timeLeft--;
+                powerUpDisplay.textContent = `${name}: ${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    gameArea.removeChild(powerUpDisplay);
+                    const index = activePowerUps.findIndex(p => p.element === powerUpDisplay);
+                    if (index !== -1) activePowerUps.splice(index, 1);
+                    updatePowerUpPositions();
+                }
+            }, 1000);
+
+            // Para efectos instantáneos como Skull, no mostrar contador
+            if (name === 'Skull') {
+                clearInterval(timer);
+                gameArea.removeChild(powerUpDisplay);
+                activePowerUps.pop();
+            }
+        }
+
+        function updatePowerUpPositions() {
+            const height = 40;
+            activePowerUps.forEach((powerUp, index) => {
+                powerUp.element.style.bottom = `${10 + (index * height)}px`;
+            });
         }
 
         function buyDamage() {
@@ -421,15 +585,15 @@
         }
 
         function updateHealthBar() {
-            playerHealthBar.style.width = `${(playerHealth / maxHealth) * 200}px`;
-            if (playerHealth <= 0) {
+            playerHealthBar.style.width = `${(playerHealth / maxHealth) * 250}px`;
+            if (playerHealth <= 0 && !immortalActive) {
                 endGame();
             }
         }
 
         function startHealthDrain() {
             setInterval(() => {
-                if (gameActive) {
+                if (gameActive && !immortalActive) {
                     const zombies = document.getElementsByClassName('zombie');
                     let totalDamage = 0;
                     for (let zombie of zombies) {
@@ -444,7 +608,7 @@
 
         function endGame() {
             gameActive = false;
-            gameOver.style.display = 'block'; /* Cambiado a block para asegurar visibilidad */
+            gameOver.style.display = 'block';
             music.pause();
             gameArea.style.display = 'none';
         }
