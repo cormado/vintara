@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaxy Fights | Vintara</title>
+    <style>
+        header {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #ffffff;
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        body {
+            background-color: #000;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Courier New', monospace;
+            height: 100vh;
+            overflow: hidden;
+        }
+        canvas {
+            margin-top: 20px;
+            border: 2px solid #333;
+        }
+        #infoBox {
+            color: #fff;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 2px solid #fff;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 16px;
+            text-shadow: 1px 1px 2px #000;
+        }
+        #livesDisplay {
+            position: absolute;
+            top: 60px;
+            left: 20px;
+        }
+        #startScreen, #gameOverScreen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(20, 20, 50, 0.9));
+            padding: 40px;
+            border: 1px solid #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+        #startScreen h1, #gameOverScreen h1 {
+            font-size: 48px;
+            margin: 0 0 20px 0;
+            text-shadow: 2px 2px 4px #000;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            font-family: 'Courier New', monospace;
+        }
+        button:hover {
+            background-color: #ddd;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <p align="center"><a href="https://vintara.xyz/index.html"><img src="home.png" height="40" width="40"></a></p>
+    </header>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div id="livesDisplay"></div>
+    <div id="infoBox">
+        Score: <span id="score">0</span> |
+        Level: <span id="level">1</span> |
+        Kills: <span id="kills">0</span>
+    </div>
+    <div id="startScreen">
+        <h1>Galaxy Fights</h1>
+        <button onclick="startGame()">Play</button>
+    </div>
+    <div id="gameOverScreen" style="display: none;">
+        <h1>Game Over</h1>
+        <button onclick="location.reload()">Play Again</button>
+    </div>
+
+    <audio id="backgroundMusic" loop>
+        <source src="musica.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="killSound">
+        <source src="kill.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="shotLSound" preload="auto">
+        <source src="shotL.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="shotESound" preload="auto">
+        <source src="shotE.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        const killSound = document.getElementById('killSound');
+        const shotLSound = document.getElementById('shotLSound');
+        const shotESound = document.getElementById('shotESound');
+
+        let player, enemies, bullets, particles, powerUps;
+        let score = 0, level = 1, kills = 0, lives = 3;
+        let gameActive = false;
+        let shield = 0, shieldColorTimer = 0;
+        const bossColors = ['#f0f', '#0ff', '#ff0', '#f90', '#90f'];
+
+        function init() {
+            player = {
+                x: canvas.width / 2 - 15,
+                y: canvas.height - 40,
+                width: 30,
+                height: 20,
+                speed: 5
+            };
+            enemies = [];
+            bullets = [];
+            particles = [];
+            powerUps = [];
+            spawnEnemies();
+            updateLivesDisplay();
+        }
+
+        function spawnEnemies() {
+            if (level % 10 === 0) {
+                const bossHealth = 10 + Math.floor(level / 10) * 10;
+                enemies.push({
+                    x: canvas.width / 2 - 30,
+                    y: 50,
+                    width: 60,
+                    height: 30,
+                    speed: 2,
+                    shootTimer: Math.random() * 50,
+                    health: bossHealth,
+                    color: bossColors[Math.floor(level / 10) % bossColors.length]
+                });
+            } else {
+                const enemyCount = 5 + Math.floor(level / 2);
+                for (let i = 0; i < enemyCount; i++) {
+                    enemies.push({
+                        x: 50 + (i % 10) * 70,
+                        y: 50 + Math.floor(i / 10) * 50,
+                        width: 30,
+                        height: 20,
+                        speed: 1 + level * 0.2,
+                        shootTimer: Math.random() * 100
+                    });
+                }
+            }
+        }
+
+        function spawnPowerUp(x, y) {
+            if (Math.random() < 0.1) {
+                powerUps.push({
+                    x: x,
+                    y: y,
+                    width: 15,
+                    height: 15,
+                    type: Math.random() < 0.5 ? 'life' : 'shield'
+                });
+            }
+        }
+
+        function drawHeart(x, y) {
+            ctx.fillStyle = '#f00';
+            ctx.beginPath();
+            ctx.moveTo(x, y + 14);
+            ctx.bezierCurveTo(x, y + 6, x - 10, y + 6, x - 10, y + 14);
+            ctx.bezierCurveTo(x - 10, y + 22, x, y + 22, x, y + 28);
+            ctx.bezierCurveTo(x, y + 22, x + 10, y + 22, x + 10, y + 14);
+            ctx.bezierCurveTo(x + 10, y + 6, x, y + 6, x, y + 14);
+            ctx.fill();
+        }
+
+        function updateLivesDisplay() {
+            ctx.clearRect(0, 0, 150, 50);
+            for (let i = 0; i < lives; i++) {
+                drawHeart(20 + i * 35, 10);
+            }
+        }
+
+        function drawPlayer(x, y) {
+            let color = '#fff';
+            if (shield > 0) {
+                shieldColorTimer = (shieldColorTimer + 1) % 20;
+                color = shieldColorTimer < 5 ? '#f00' : shieldColorTimer < 10 ? '#0f0' : shieldColorTimer < 15 ? '#00f' : '#ff0';
+            }
+            ctx.fillStyle = color;
+            // Simplified X-Wing design with fewer pixels
+            ctx.fillRect(x + 10, y - 5, 10, 5);  // Cockpit
+            ctx.fillRect(x, y, 30, 5);          // Body top
+            ctx.fillRect(x + 5, y + 5, 20, 5);  // Body middle
+            ctx.fillRect(x + 10, y + 10, 10, 5); // Body bottom
+            ctx.fillRect(x, y + 5, 5, 5);       // Left wing top
+            ctx.fillRect(x, y + 10, 5, 5);      // Left wing bottom
+            ctx.fillRect(x + 25, y + 5, 5, 5);  // Right wing top
+            ctx.fillRect(x + 25, y + 10, 5, 5); // Right wing bottom
+            ctx.fillStyle = '#f00';              // Red engines
+            ctx.fillRect(x, y + 15, 5, 5);      // Left engine
+            ctx.fillRect(x + 25, y + 15, 5, 5); // Right engine
+            ctx.fillStyle = '#00f';              // Blue cannons
+            ctx.fillRect(x + 5, y + 5, 5, 5);   // Left cannon
+            ctx.fillRect(x + 20, y + 5, 5, 5);  // Right cannon
+        }
+
+        function drawEnemy(x, y, isBoss = false, bossColor = '#f00') {
+            ctx.fillStyle = isBoss ? bossColor : '#00f';
+            if (isBoss) {
+                // Boss design inspired by Space Invaders (simplified to 60x30 pixels)
+                ctx.fillRect(x, y, 60, 10);          // Top body
+                ctx.fillRect(x + 5, y + 10, 50, 10);  // Middle body
+                ctx.fillRect(x + 15, y + 20, 30, 10); // Bottom body
+                ctx.fillRect(x + 10, y + 10, 5, 5);   // Left eye
+                ctx.fillRect(x + 45, y + 10, 5, 5);   // Right eye
+                ctx.fillRect(x + 5, y + 15, 5, 5);    // Left detail
+                ctx.fillRect(x + 50, y + 15, 5, 5);   // Right detail
+            } else {
+                // Enemy version with variations (inverted colors, adjusted wings)
+                ctx.fillStyle = '#00f';          // Blue body (inverted from player's red)
+                ctx.fillRect(x + 10, y - 5, 10, 5);  // Cockpit
+                ctx.fillRect(x, y, 30, 5);       // Body top
+                ctx.fillRect(x + 5, y + 5, 20, 5);   // Body middle
+                ctx.fillRect(x + 10, y + 10, 10, 5); // Body bottom
+                ctx.fillRect(x, y + 5, 5, 5);    // Left wing top
+                ctx.fillRect(x, y + 10, 5, 5);   // Left wing bottom
+                ctx.fillRect(x + 25, y + 5, 5, 5); // Right wing top
+                ctx.fillRect(x + 25, y + 10, 5, 5); // Right wing bottom
+                ctx.fillStyle = '#f00';          // Red engines (inverted from player's blue)
+                ctx.fillRect(x, y + 15, 5, 5);   // Left engine
+                ctx.fillRect(x + 25, y + 15, 5, 5); // Right engine
+                ctx.fillStyle = '#fff';          // White cannons (different from player's blue)
+                ctx.fillRect(x + 5, y + 5, 5, 5);   // Left cannon
+                ctx.fillRect(x + 20, y + 5, 5, 5);  // Right cannon
+            }
+        }
+
+        function draw() {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Background stars
+            ctx.fillStyle = '#fff';
+            for (let i = 0; i < 50; i++) {
+                ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 1, 1);
+            }
+
+            // Draw player
+            drawPlayer(player.x, player.y);
+
+            // Draw enemies
+            enemies.forEach(enemy => {
+                drawEnemy(enemy.x, enemy.y, enemy.health !== undefined, enemy.color);
+            });
+
+            // Draw bullets (player white, enemy yellow)
+            bullets.forEach(bullet => {
+                ctx.fillStyle = bullet.speed < 0 ? '#fff' : '#ff0';
+                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+                ctx.fillRect(bullet.x - 2, bullet.y + (bullet.speed < 0 ? -2 : 2), 2, 2);
+            });
+
+            // Draw particles
+            particles.forEach(particle => {
+                ctx.fillStyle = `rgba(255, 0, 0, ${particle.alpha})`;
+                ctx.fillRect(particle.x, particle.y, particle.size, particle.size);
+            });
+
+            // Draw power-ups
+            powerUps.forEach(power => {
+                ctx.fillStyle = power.type === 'life' ? '#0f0' : '#00f';
+                ctx.fillRect(power.x, power.y, power.width, power.height);
+                ctx.fillRect(power.x + 5, power.y + 5, 5, 5);
+            });
+
+            updateLivesDisplay();
+        }
+
+        function update() {
+            if (!gameActive) return;
+
+            // Player movement
+            if ((keys.ArrowLeft || keys.KeyA) && player.x > 0) player.x -= player.speed;
+            if ((keys.ArrowRight || keys.KeyD) && player.x < canvas.width - player.width) player.x += player.speed;
+
+            // Enemy movement and shooting
+            enemies.forEach(enemy => {
+                enemy.x += enemy.speed;
+                if (enemy.x <= 0 || enemy.x >= canvas.width - (enemy.health ? 60 : 30)) enemy.speed = -enemy.speed;
+                
+                enemy.shootTimer--;
+                if (enemy.shootTimer <= 0) {
+                    bullets.push({ x: enemy.x + (enemy.health ? 30 : 12), y: enemy.y + (enemy.health ? 30 : 20), width: 5, height: 10, speed: 5 + level * 0.2 });
+                    shotESound.play();
+                    enemy.shootTimer = enemy.health ? 50 - level : 100 - level * 2;
+                }
+            });
+
+            // Bullet movement
+            bullets.forEach((bullet, index) => {
+                bullet.y += bullet.speed;
+                if (bullet.y < 0 || bullet.y > canvas.height) bullets.splice(index, 1);
+            });
+
+            // Collision detection
+            bullets.forEach((bullet, bIndex) => {
+                if (bullet.speed < 0) { // Player bullets
+                    enemies.forEach((enemy, eIndex) => {
+                        if (collision(bullet, enemy)) {
+                            if (enemy.health) {
+                                enemy.health--;
+                                if (enemy.health <= 0) {
+                                    for (let i = 0; i < 20; i++) {
+                                        particles.push({
+                                            x: enemy.x + 30,
+                                            y: enemy.y + 15,
+                                            size: 5,
+                                            vx: (Math.random() - 0.5) * 3,
+                                            vy: (Math.random() - 0.5) * 3,
+                                            alpha: 1
+                                        });
+                                    }
+                                    killSound.play();
+                                    enemies.splice(eIndex, 1);
+                                    score += 100;
+                                    kills++;
+                                    level++;
+                                    spawnEnemies();
+                                }
+                            } else {
+                                for (let i = 0; i < 10; i++) {
+                                    particles.push({
+                                        x: enemy.x + 15,
+                                        y: enemy.y + 10,
+                                        size: 3,
+                                        vx: (Math.random() - 0.5) * 2,
+                                        vy: (Math.random() - 0.5) * 2,
+                                        alpha: 1
+                                    });
+                                }
+                                killSound.play();
+                                enemies.splice(eIndex, 1);
+                                score += 10;
+                                kills++;
+                                spawnPowerUp(enemy.x, enemy.y);
+                                if (enemies.length === 0) {
+                                    level++;
+                                    spawnEnemies();
+                                }
+                            }
+                            bullets.splice(bIndex, 1);
+                        }
+                    });
+                } else { // Enemy bullets
+                    if (collision(bullet, player)) {
+                        bullets.splice(bIndex, 1);
+                        if (shield > 0) {
+                            shield--;
+                        } else {
+                            lives--;
+                            if (lives <= 0) endGame();
+                        }
+                    }
+                }
+            });
+
+            // Particles
+            particles.forEach((p, index) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= 0.05;
+                if (p.alpha <= 0) particles.splice(index, 1);
+            });
+
+            // Power-ups
+            powerUps.forEach((power, index) => {
+                power.y += 2;
+                if (collision(power, player)) {
+                    if (power.type === 'life') lives++;
+                    else shield = 5;
+                    powerUps.splice(index, 1);
+                }
+                if (power.y > canvas.height) powerUps.splice(index, 1);
+            });
+
+            updateInfo();
+            draw();
+            requestAnimationFrame(update);
+        }
+
+        function collision(a, b) {
+            const width = b.health ? 60 : 30;
+            const height = b.health ? 30 : 20;
+            return a.x < b.x + width && a.x + a.width > b.x && 
+                   a.y < b.y + height && a.y + a.height > b.y;
+        }
+
+        function updateInfo() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('level').textContent = level;
+            document.getElementById('kills').textContent = kills;
+        }
+
+        function endGame() {
+            gameActive = false;
+            backgroundMusic.pause();
+            for (let i = 0; i < 20; i++) {
+                particles.push({
+                    x: player.x + 15,
+                    y: player.y + 10,
+                    size: 3,
+                    vx: (Math.random() - 0.5) * 3,
+                    vy: (Math.random() - 0.5) * 3,
+                    alpha: 1
+                });
+            }
+            setTimeout(() => {
+                document.getElementById('gameOverScreen').style.display = 'block';
+            }, 1000);
+        }
+
+        function startGame() {
+            document.getElementById('startScreen').style.display = 'none';
+            init();
+            gameActive = true;
+            backgroundMusic.play();
+            update();
+        }
+
+        const keys = {};
+        window.addEventListener('keydown', e => {
+            keys[e.code] = true;
+            if ((e.code === 'ArrowUp' || e.code === 'KeyW') && gameActive && !keys.shooting) {
+                bullets.push({ x: player.x + 12, y: player.y - 10, width: 5, height: 10, speed: -7 });
+                playShotLSound(); // Usamos una función personalizada para reproducir el audio
+                keys.shooting = true;
+            }
+        });
+        window.addEventListener('keyup', e => {
+            keys[e.code] = false;
+            if (e.code === 'ArrowUp' || e.code === 'KeyW') keys.shooting = false;
+        });
+
+        // Función personalizada para reproducir shotL.mp3 múltiples veces
+        function playShotLSound() {
+            const audio = new Audio('shotL.mp3'); // Crea una nueva instancia del audio
+            audio.play().catch(error => console.error('Error al reproducir audio:', error));
+        }
+    </script>
+</body>
+</html>
