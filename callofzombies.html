@@ -78,14 +78,14 @@
             cursor: crosshair;
             animation: zombieWalk 1.5s infinite ease-in-out;
             z-index: 4;
-            filter: drop-shadow(0 0 10px rgba(168, 168, 168, 0.7));
+            filter: drop-shadow(0 0 10px rgba(255, 68, 68, 0.7));
         }
 
         .boss {
             width: 160px;
             height: 160px;
             animation: zombieWalk 2s infinite ease-in-out;
-            filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.9));
+            filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.9));
         }
 
         .power-up {
@@ -190,7 +190,7 @@
             border-radius: 5px;
             border: 1px solid #33ff33;
             z-index: 5;
-            transition: bottom 0.3s ease; /* Transición suave al moverse */
+            transition: bottom 0.3s ease;
         }
 
         #game-over {
@@ -270,6 +270,9 @@
     </div>
     <div id="game-area">
         <div id="background"></div>
+        <audio id="background-music" loop>
+            <source src="musicazombies.mp3" type="audio/mpeg"> <!-- Cambio aquí -->
+        </audio>
         <div id="hud">
             Money: $<span id="money">0</span><br>
             Round: <span id="round">1</span><br>
@@ -325,7 +328,7 @@
         let healthLevel = 0;
         const healthPrices = [800, 1300, 1600, 2000, 4000];
 
-        let activePowerUps = []; // Lista para gestionar múltiples potenciadores
+        let activePowerUps = [];
 
         playButton.addEventListener('click', () => {
             startScreen.style.display = 'none';
@@ -495,8 +498,7 @@
             powerUpDisplay.textContent = `${name}: ${timeLeft}s`;
             gameArea.appendChild(powerUpDisplay);
 
-            // Posicionar según los potenciadores activos
-            const height = 40; // Altura aproximada de cada contador (incluye padding y bordes)
+            const height = 40;
             powerUpDisplay.style.bottom = `${10 + (activePowerUps.length * height)}px`;
 
             activePowerUps.push({ element: powerUpDisplay, name: name });
@@ -513,7 +515,6 @@
                 }
             }, 1000);
 
-            // Para efectos instantáneos como Skull, no mostrar contador
             if (name === 'Skull') {
                 clearInterval(timer);
                 gameArea.removeChild(powerUpDisplay);
