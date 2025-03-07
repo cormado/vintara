@@ -297,7 +297,6 @@
         let currentSong = null;
         let devMode = false;
         let devKeySequence = [];
-        let spawnInterval = 500;
         const gameScreen = document.getElementById('gameScreen');
         const scoreDisplay = document.getElementById('score');
         const healthBar = document.getElementById('healthBar');
@@ -307,8 +306,10 @@
         const songAudio = document.getElementById('songAudio');
         const previewAudio = document.getElementById('previewAudio');
         const devModeIndicator = document.getElementById('devModeIndicator');
+        let spawnInterval = 500;
         const hitZones = document.querySelectorAll('.hitZone');
 
+        // Inicializar el juego al cargar la página
         window.onload = function() {
             devMode = false;
             devKeySequence = [];
@@ -393,22 +394,17 @@
                 songAudio.src = "gogogo.mp3";
                 setTimeout(checkSongEnd, 183000);
             } else if (song === 'song2') {
-                spawnInterval = 250;
+                spawnInterval = 250; // Velocidad base para Galaxy Collapse
                 songAudio.src = "galaxycollapse.mp3";
                 setTimeout(checkSongEnd, 407000);
-                // Ajuste dinámico de spawnInterval
-                setTimeout(() => { spawnInterval = 250; }, 0);       // 0:00 - 0:27: Normal
-                setTimeout(() => { spawnInterval = 99999; }, 27000); // 0:27 - 0:30: Vacío (simulado con intervalo grande)
-                setTimeout(() => { spawnInterval = 200; }, 30000);   // 0:30 - 1:57: Acelerado
-                setTimeout(() => { spawnInterval = 400; }, 117000);  // 1:57 - 2:36: Pausa lenta
-                setTimeout(() => { gradualAcceleration(156000, 176000, 400, 200); }, 156000); // 2:36 - 2:56: Aceleración gradual
-                setTimeout(() => { spawnInterval = 99999; }, 176000); // 2:56 - 2:59: Vacío
-                setTimeout(() => { spawnInterval = 120; }, 179000);   // 2:59 - 3:50: Muy rápido
-                setTimeout(() => { spawnInterval = 200; }, 230000);   // 3:50 - 4:32: Acelerado
-                setTimeout(() => { spawnInterval = 400; }, 272000);   // 4:32 - 5:01: Pausa lenta
-                setTimeout(() => { spawnInterval = 99999; }, 301000); // 5:01 - 5:04: Vacío
-                setTimeout(() => { spawnInterval = 120; }, 304000);   // 5:04 - 5:54: Muy rápido
-                setTimeout(() => { spawnInterval = 250; }, 354000);   // 5:54 - 6:47: Normal
+                // Ajuste dinámico de spawnInterval basado en el ritmo de "No Se Va"
+                setTimeout(() => { spawnInterval = 300; }, 0);      // Intro calmada: 0:00 - 1:00 (0s - 60s)
+                setTimeout(() => { spawnInterval = 200; }, 60000);  // Build-up: 1:00 - 1:30 (60s - 90s)
+                setTimeout(() => { spawnInterval = 150; }, 90000);  // Drop 1: 1:30 - 3:00 (90s - 180s)
+                setTimeout(() => { spawnInterval = 300; }, 180000); // Calma: 3:00 - 4:00 (180s - 240s)
+                setTimeout(() => { spawnInterval = 200; }, 240000); // Build-up 2: 4:00 - 4:30 (240s - 270s)
+                setTimeout(() => { spawnInterval = 150; }, 270000); // Drop 2: 4:30 - 5:30 (270s - 330s)
+                setTimeout(() => { spawnInterval = 300; }, 330000); // Final calmado: 5:30 - 6:47 (330s - 407s)
             }
             songAudio.play();
 
@@ -419,7 +415,6 @@
 
         function spawnBlocks() {
             if (!gameActive) return;
-
             const lane = Math.floor(Math.random() * 4);
             const block = document.createElement('div');
             block.classList.add('block');
@@ -432,25 +427,15 @@
             gameScreen.appendChild(block);
             blocks.push(block);
 
-            // Usar spawnInterval directamente en Dev Mode para evitar aceleración
-            const nextInterval = devMode ? spawnInterval : (Math.random() < 0.7 ? spawnInterval : spawnInterval * 0.5);
+            const nextInterval = Math.random() < 0.7 ? spawnInterval : spawnInterval * 0.5;
             setTimeout(spawnBlocks, nextInterval);
-        }
-
-        function gradualAcceleration(startTime, endTime, startInterval, endInterval) {
-            if (!gameActive || Date.now() >= endTime) return;
-            const duration = endTime - startTime;
-            const currentTime = Date.now() - startTime;
-            const progress = Math.min(1, currentTime / duration);
-            spawnInterval = startInterval + (endInterval - startInterval) * progress;
-            setTimeout(() => gradualAcceleration(startTime, endTime, startInterval, endInterval), 100);
         }
 
         function gameLoop() {
             if (!gameActive) return;
             blocks.forEach((block, index) => {
                 let top = parseInt(block.style.top) || 0;
-                top += 7; // Velocidad de caída constante, no afectada por devMode
+                top += 7;
                 block.style.top = `${top}px`;
                 if (top > 800) {
                     gameScreen.removeChild(block);
