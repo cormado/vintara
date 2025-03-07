@@ -272,12 +272,12 @@
         <div id="gameOver">
             Game Over!<br>
             <button class="button" onclick="restartGame()">Restart</button>
-            <button class="button" onclick="backToStartMenu()">Back to Menu</button>
+            <button class="button" onclick="backToSongMenu()">Back to Menu</button>
         </div>
         <div id="winScreen">
             You Win!<br>
             <span id="finalStats"></span><br>
-            <button class="button" onclick="backToStartMenu()">Back to Menu</button>
+            <button class="button" onclick="backToSongMenu()">Back to Menu</button>
         </div>
         <audio id="songAudio" autoplay></audio>
         <audio id="previewAudio"></audio>
@@ -309,21 +309,11 @@
         let spawnInterval = 500;
         const hitZones = document.querySelectorAll('.hitZone');
 
-        // Inicializar el juego al cargar la página
-        window.onload = function() {
-            devMode = false;
-            devKeySequence = [];
-            devModeIndicator.style.display = 'none';
-            document.getElementById('startMenu').style.display = 'block';
-            document.getElementById('songMenu').style.display = 'none';
-            document.getElementById('gameScreen').style.display = 'none';
-        };
-
         function showSongMenu() {
             document.getElementById('startMenu').style.display = 'none';
             document.getElementById('songMenu').style.display = 'block';
-            devKeySequence = [];
-            devModeIndicator.style.display = devMode ? 'flex' : 'none';
+            devKeySequence = []; // Reiniciar secuencia al entrar al menú
+            devModeIndicator.style.display = 'none'; // Ocultar indicador al entrar al menú
             document.addEventListener('keydown', handleDevModeInput);
             setupSongMenu();
         }
@@ -332,7 +322,7 @@
             document.getElementById('songMenu').style.display = 'none';
             document.getElementById('gameScreen').style.display = 'none';
             document.getElementById('startMenu').style.display = 'block';
-            devModeIndicator.style.display = 'none';
+            devModeIndicator.style.display = 'none'; // Ocultar indicador al volver al menú inicial
             document.removeEventListener('keydown', handleDevModeInput);
         }
 
@@ -397,14 +387,11 @@
                 spawnInterval = 250; // Velocidad base para Galaxy Collapse
                 songAudio.src = "galaxycollapse.mp3";
                 setTimeout(checkSongEnd, 407000);
-                // Ajuste dinámico de spawnInterval basado en el ritmo de "No Se Va"
-                setTimeout(() => { spawnInterval = 300; }, 0);      // Intro calmada: 0:00 - 1:00 (0s - 60s)
-                setTimeout(() => { spawnInterval = 200; }, 60000);  // Build-up: 1:00 - 1:30 (60s - 90s)
-                setTimeout(() => { spawnInterval = 150; }, 90000);  // Drop 1: 1:30 - 3:00 (90s - 180s)
-                setTimeout(() => { spawnInterval = 300; }, 180000); // Calma: 3:00 - 4:00 (180s - 240s)
-                setTimeout(() => { spawnInterval = 200; }, 240000); // Build-up 2: 4:00 - 4:30 (240s - 270s)
-                setTimeout(() => { spawnInterval = 150; }, 270000); // Drop 2: 4:30 - 5:30 (270s - 330s)
-                setTimeout(() => { spawnInterval = 300; }, 330000); // Final calmado: 5:30 - 6:47 (330s - 407s)
+                // Ajuste dinámico de spawnInterval según partes de la canción
+                setTimeout(() => { spawnInterval = 150; }, 90000);  // Drop 1: 1:30 (90s)
+                setTimeout(() => { spawnInterval = 300; }, 180000); // Calma: 3:00 (180s)
+                setTimeout(() => { spawnInterval = 150; }, 240000); // Drop 2: 4:00 (240s)
+                setTimeout(() => { spawnInterval = 300; }, 330000); // Final calmado: 5:30 (330s)
             }
             songAudio.play();
 
@@ -579,6 +566,7 @@
             document.addEventListener('keydown', handleDevModeInput);
         }
 
+        // Nueva función para volver al menú inicial desde cualquier pantalla
         function backToStartMenu() {
             blocks.forEach(block => gameScreen.removeChild(block));
             blocks = [];
@@ -589,6 +577,13 @@
             document.removeEventListener('keydown', handleDevModeInput);
             document.removeEventListener('keydown', handleInput);
         }
+
+        // Reemplazar backToSongMenu en gameOver y winScreen con backToStartMenu
+        document.querySelectorAll('#gameOver button, #winScreen button').forEach(button => {
+            if (button.textContent.trim() === 'Back to Menu') {
+                button.onclick = backToStartMenu;
+            }
+        });
     </script>
 </body>
 </html>
