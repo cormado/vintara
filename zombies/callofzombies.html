@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call Of Zombies | Vintara</title>
+    <link rel="stylesheet" href="game-style.css">
+</head>
+<body>
+    <header>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/news">News</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </header>
+    <div id="game-container">
+        <div id="start-screen">
+            <h1 id="title">CALL OF ZOMBIES</h1>
+            <button id="play-button">Play</button>
+        </div>
+        <div id="game-area">
+            <div id="background"></div>
+            <audio id="background-music" loop>
+                <source src="musica.mp3" type="audio/mpeg">
+            </audio>
+            <div id="hud">
+                Money: $<span id="money">0</span><br>
+                Round: <span id="round">1</span><br>
+                Zombies: <span id="zombie-count">0</span>/<span id="zombie-goal">2</span>
+            </div>
+            <div id="player-health-bar"></div>
+            <div id="shop">
+                <button id="damage-button" class="shop-button" onclick="buyDamage()">More Damage: Level 1 ($500)</button><br>
+                <button id="money-button" class="shop-button" onclick="buyExtraMoney()">Extra Money: Level 1 ($200)</button><br>
+                <button class="shop-button" onclick="buyMedkit()">Medkit ($100)</button><br>
+                <button id="health-button" class="shop-button" onclick="buyHealthBoost()">Health Boost: Level 1 ($800)</button>
+            </div>
+        </div>
+        <div id="game-over">
+            <p>You Died</p>
+            <p><button onclick="location.reload()">Play Again</button></p>
+        </div>
+    </div>
+    <div class="footer">
+        <p>VINTARA 2025</p>
+    </div>
+    <script src="game-script.js"></script>
+</body>
+</html>

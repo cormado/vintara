@@ -1,0 +1,460 @@
+/* Reset default styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #00bcd4, #1c2526);
+    color: #e0e0e0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* Header styling */
+header {
+    width: 100%;
+    background: linear-gradient(90deg, #00bcd4, #6a1b9a);
+    padding: 15px 20px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+header ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+header ul li {
+    display: inline;
+}
+
+header ul li a {
+    color: #e0e0e0;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+header ul li a:hover {
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+/* Game container */
+#game-container {
+    width: 100%;
+    height: calc(100vh - 60px - 50px);
+    position: relative;
+    background: url('https://www.transparenttextures.com/patterns/rice-paper.png'), #333;
+    background-blend-mode: overlay;
+    overflow: hidden;
+    flex-grow: 1;
+}
+
+/* Start screen */
+#start-screen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(20, 20, 20, 0.95), rgba(0, 50, 0, 0.9));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+#title {
+    color: #33ff33;
+    font-size: 4rem;
+    text-shadow: 0 0 15px #33ff33, 0 0 30px #ff4444;
+    animation: glow 1.5s infinite alternate;
+    font-family: 'Impact', sans-serif;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+}
+
+#play-button {
+    padding: 20px 40px;
+    font-size: 1.5rem;
+    background: #ffffff;
+    color: #000000;
+    border: 3px solid #000000;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#play-button:hover {
+    background: #000000;
+    color: #ffffff;
+}
+
+/* Game area */
+#game-area {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+#background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url('https://th.bing.com/th/id/OIP.yOATV4-PYHDcuShaXHO16gHaEu?rs=1&pid=ImgDetMain');
+    background-size: cover;
+    filter: blur(3px) brightness(0.6);
+    z-index: 0;
+    opacity: 0.8;
+}
+
+.zombie {
+    position: absolute;
+    width: 5vw;
+    height: 5vw;
+    min-width: 60px;
+    min-height: 60px;
+    background: url('https://cdn11.bigcommerce.com/s-j1baj4lsns/images/stencil/1280x1280/products/12835/8395/zombie__91765.1544992583.png?c=2') no-repeat center;
+    background-size: contain;
+    cursor: crosshair;
+    animation: zombieWalk 1.5s infinite ease-in-out;
+    z-index: 4;
+    filter: drop-shadow(0 0 10px rgba(168, 168, 168, 0.7));
+}
+
+.boss {
+    width: 10vw;
+    height: 10vw;
+    min-width: 120px;
+    min-height: 120px;
+    animation: zombieWalk 2s infinite ease-in-out;
+    filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.9));
+}
+
+.power-up {
+    position: absolute;
+    width: 5vw;
+    height: 5vw;
+    min-width: 60px;
+    min-height: 60px;
+    cursor: pointer;
+    z-index: 5;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.7));
+    animation: float 2s infinite ease-in-out;
+}
+
+.health-bar {
+    position: absolute;
+    width: 80%;
+    height: 8px;
+    background: linear-gradient(90deg, #ff4444, #ff6666);
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: width 0.2s ease;
+    z-index: 2;
+    border: 1px solid #000;
+    border-radius: 4px;
+    box-shadow: 0 0 5px rgba(255, 68, 68, 0.8);
+}
+
+.boss .health-bar {
+    width: 90%;
+    height: 10px;
+}
+
+#player-health-bar {
+    position: absolute;
+    top: 5vh;
+    left: 2vw;
+    width: 20vw;
+    max-width: 250px;
+    height: 2vh;
+    min-height: 20px;
+    background: linear-gradient(90deg, #33ff33, #66ff66);
+    z-index: 5;
+    transition: width 0.2s ease, background 0.3s ease;
+    border: 2px solid #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(51, 255, 51, 0.7);
+}
+
+#hud {
+    position: absolute;
+    top: 10vh;
+    left: 2vw;
+    color: #fff;
+    font-size: 1.2rem;
+    text-shadow: 0 0 5px #000;
+    z-index: 5;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #33ff33;
+}
+
+#shop {
+    position: absolute;
+    top: 25vh;
+    right: 2vw;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 15px;
+    border: 2px solid #ff4444;
+    border-radius: 10px;
+    z-index: 3;
+    box-shadow: 0 0 15px rgba(255, 68, 68, 0.5);
+    max-width: 20vw;
+    min-width: 150px;
+}
+
+.shop-button {
+    background: #ffffff;
+    color: #000000;
+    border: 2px solid #000000;
+    padding: 8px;
+    margin: 8px 0;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.shop-button:hover {
+    background: #000000;
+    color: #ffffff;
+}
+
+.power-up-display {
+    position: absolute;
+    right: 2vw;
+    color: #fff;
+    font-size: 1rem;
+    text-shadow: 0 0 5px #000;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #33ff33;
+    z-index: 5;
+    transition: bottom 0.3s ease;
+}
+
+#game-over {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(50, 0, 0, 0.95), rgba(100, 0, 0, 0.9));
+    z-index: 20;
+    text-align: center;
+    padding-top: 20vh;
+    box-sizing: border-box;
+}
+
+#game-over p:first-child {
+    color: #ffffff;
+    font-size: 4rem;
+    margin: 0 0 30px 0;
+    padding: 20px 40px;
+    background: rgba(0, 0, 0, 0.8);
+    display: inline-block;
+    border-radius: 15px;
+    text-shadow: 0 0 15px #ff4444, 0 0 30px #ff4444, 0 0 45px #000;
+    animation: pulse 2s infinite;
+    font-family: 'Impact', sans-serif;
+    letter-spacing: 2px;
+}
+
+#game-over button {
+    padding: 15px 30px;
+    font-size: 1.5rem;
+    background: #ffffff;
+    color: #ff4444;
+    border: 3px solid #ff4444;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(255, 68, 68, 0.8);
+}
+
+#game-over button:hover {
+    background: #ff4444;
+    color: #ffffff;
+    box-shadow: 0 0 25px rgba(255, 68, 68, 1);
+}
+
+/* Footer */
+.footer {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 15px 0;
+    text-align: center;
+    font-size: 1rem;
+    color: #9b9b9b;
+}
+
+/* Animations */
+@keyframes glow {
+    from { text-shadow: 0 0 10px #33ff33, 0 0 20px #ff4444; }
+    to { text-shadow: 0 0 20px #33ff33, 0 0 40px #ff4444; }
+}
+
+@keyframes zombieWalk {
+    0% { transform: translateY(0) rotate(3deg); }
+    50% { transform: translateY(-8px) rotate(-3deg); }
+    100% { transform: translateY(0) rotate(3deg); }
+}
+
+@keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0% { text-shadow: 0 0 15px #ff4444, 0 0 30px #ff4444, 0 0 45px #000; }
+    50% { text-shadow: 0 0 25px #ff4444, 0 0 50px #ff4444, 0 0 60px #000; }
+    100% { text-shadow: 0 0 15px #ff4444, 0 0 30px #ff4444, 0 0 45px #000; }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    header {
+        padding: 10px;
+    }
+
+    header ul li a {
+        font-size: 1rem;
+    }
+
+    #title {
+        font-size: 3rem;
+    }
+
+    #play-button {
+        font-size: 1.2rem;
+        padding: 15px 30px;
+    }
+
+    #hud {
+        font-size: 1rem;
+        padding: 8px 12px;
+        top: 15vh;
+        left: 2vw;
+    }
+
+    #shop {
+        top: 30vh;
+        right: 2vw;
+        padding: 10px;
+        font-size: 0.8rem;
+    }
+
+    .shop-button {
+        font-size: 0.7rem;
+        padding: 5px;
+    }
+
+    #player-health-bar {
+        top: 10vh;
+        width: 25vw;
+        height: 1.5vh;
+    }
+
+    .zombie, .power-up {
+        width: 7vw;
+        height: 7vw;
+        min-width: 50px;
+        min-height: 50px;
+    }
+
+    .boss {
+        width: 12vw;
+        height: 12vw;
+        min-width: 100px;
+        min-height: 100px;
+    }
+
+    #game-over p:first-child {
+        font-size: 3rem;
+    }
+
+    #game-over button {
+        font-size: 1.2rem;
+        padding: 10px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    #title {
+        font-size: 2rem;
+    }
+
+    #play-button {
+        font-size: 1rem;
+        padding: 10px 20px;
+    }
+
+    #hud {
+        font-size: 0.9rem;
+        top: 20vh;
+    }
+
+    #shop {
+        top: 35vh;
+        right: 2vw;
+        padding: 8px;
+        font-size: 0.7rem;
+    }
+
+    .shop-button {
+        font-size: 0.6rem;
+        padding: 4px;
+    }
+
+    #player-health-bar {
+        top: 15vh;
+        width: 30vw;
+        height: 1.2vh;
+    }
+
+    .zombie, .power-up {
+        width: 10vw;
+        height: 10vw;
+        min-width: 40px;
+        min-height: 40px;
+    }
+
+    .boss {
+        width: 15vw;
+        height: 15vw;
+        min-width: 80px;
+        min-height: 80px;
+    }
+
+    #game-over p:first-child {
+        font-size: 2rem;
+    }
+
+    #game-over button {
+        font-size: 1rem;
+        padding: 8px 15px;
+    }
+}
