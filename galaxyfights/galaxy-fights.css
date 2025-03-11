@@ -1,0 +1,77 @@
+header {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #ffffff;
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+body {
+    background-color: #000;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Courier New', monospace;
+    height: 100vh;
+    overflow: hidden;
+}
+
+canvas {
+    margin-top: 20px;
+    border: 2px solid #333;
+}
+
+#infoBox {
+    color: #fff;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 2px solid #fff;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-size: 16px;
+    text-shadow: 1px 1px 2px #000;
+}
+
+#livesDisplay {
+    position: absolute;
+    top: 60px;
+    left: 20px;
+}
+
+#startScreen, #gameOverScreen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(20, 20, 50, 0.9));
+    padding: 40px;
+    border: 1px solid #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+#startScreen h1, #gameOverScreen h1 {
+    font-size: 48px;
+    margin: 0 0 20px 0;
+    text-shadow: 2px 2px 4px #000;
+}
+
+button {
+    padding: 15px 30px;
+    font-size: 18px;
+    background-color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+    font-family: 'Courier New', monospace;
+}
+
+button:hover {
+    background-color: #ddd;
+    transform: scale(1.05);
+}
