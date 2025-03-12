@@ -8,22 +8,31 @@
 </head>
 <body>
     <header>
-        <p align="center"><a href="/"><img src="home.png" height="40" width="40"></a></p>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/news">News</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
     </header>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <div id="livesDisplay"></div>
-    <div id="infoBox">
-        Score: <span id="score">0</span> |
-        Level: <span id="level">1</span> |
-        Kills: <span id="kills">0</span>
+    <div id="game-container">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div id="livesDisplay"></div>
+        <div id="infoBox">
+            Score: <span id="score">0</span> |
+            Level: <span id="level">1</span> |
+            Kills: <span id="kills">0</span>
+        </div>
+        <div id="startScreen">
+            <h1>Galaxy Fights</h1>
+            <button onclick="startGame()">Play</button>
+        </div>
+        <div id="gameOverScreen" style="display: none;">
+            <h1>Game Over</h1>
+            <button onclick="location.reload()">Play Again</button>
+        </div>
     </div>
-    <div id="startScreen">
-        <h1>Galaxy Fights</h1>
-        <button onclick="startGame()">Play</button>
-    </div>
-    <div id="gameOverScreen" style="display: none;">
-        <h1>Game Over</h1>
-        <button onclick="location.reload()">Play Again</button>
+    <div class="footer">
+        <p>VINTARA 2025</p>
     </div>
 
     <audio id="backgroundMusic" loop>
