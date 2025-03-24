@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Car Dodge Game (Vanilla JS)</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+        }
+
+        #gameCanvas {
+            background-color: #333; /* Gris para la carretera */
+            /* Efecto de scanlines (puedes ajustarlo) */
+            background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.1) 50%, transparent 50%),
+                              linear-gradient(90deg, rgba(0, 0, 0, 0.1) 50%, transparent 50%);
+            background-size: 4px 4px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const ROAD_WIDTH = 400;
+        const ROAD_X = canvas.width / 2;
+        const PLAYER_Y = 500;
+        const PLAYER_WIDTH = 30;
+        const PLAYER_HEIGHT = 50;
+        const ENEMY_WIDTH = 30;
+        const ENEMY_HEIGHT = 50;
+
+        let playerX = ROAD_X - ROAD_WIDTH / 4 - PLAYER_WIDTH / 2;
+        let playerSpeed = 200 / 60; // Velocidad por frame (aproximación)
+        let enemyCars = [];
+        let enemySpeed = 5;
+        let spawnInterval = 120; // Frames entre aparición de enemigos (aproximación de 2 segundos a 60 FPS)
+        let frameCount = 0;
+        let gameStarted = false;
+        let gameOver = false;
+        let score = 0;
+
+        const startScreen = {
+            draw: function() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.font = '48px "Press Start 2P"';
+                ctx.fillStyle = '#FF00FF';
+                ctx.fillText('CAR DODGE', canvas.width / 2 - 180, 200);
+                ctx.font = '40px "Press Start 2P"';
+                ctx.fillStyle = '#FFFF00';
+                ctx.fillRect(canvas.width / 2 - 100, 300, 200, 60);
+                ctx.fillStyle = '#000';
+                ctx.fillText('PLAY', canvas.width / 2 - 60, 345);
+            },
+            handleClick: function(x, y) {
+                if (x > canvas.width / 2 - 100 && x < canvas.width / 2 + 100 && y > 300 && y < 360) {
+                    gameStarted = true;
+                    enemyCars = []; // Reset enemigos
+                    score = 0;
+                    gameOver = false;
+                }
+            }
+        };
+
+        const gameOverScreen = {
+            draw: function() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.font = '48px "Press Start 2P"';
+                ctx.fillStyle = '#FF0000';
+                ctx.fillText('GAME OVER', canvas.width / 2 - 180, 200);
+                ctx.font = '32px "Press Start 2P"';
+                ctx.fillStyle = '#00FF00';
+                ctx.fillText(`Score: ${score}`, canvas.width / 2 - 100, 300);
+                ctx.font = '32px "Press Start 2P"';
+                ctx.fillStyle = '#FFFF00';
+                ctx.fillRect(canvas.width / 2 - 120, 400, 240, 50);
+                ctx.fillStyle = '#000';
+                ctx.fillText('RESTART', canvas.width / 2 - 90, 435);
+            },
+            handleClick: function(x, y) {
+                if (x > canvas.width / 2 - 120 && x < canvas.width / 2 + 120 && y > 400 && y < 450) {
+                    gameStarted = true;
+                    enemyCars = []; // Reset enemigos
+                    score = 0;
+                    gameOver = false;
+                }
+            }
+        };
+
+        function drawRoad() {
+        ctx.fillStyle = '#666';
+        ctx.fillRect(ROAD_X - ROAD_WIDTH / 2, 0, ROAD_WIDTH, canvas.height);
+        // Líneas de la carretera (simplificado)
+        ctx.strokeStyle = '#FFF';
+        ctx.lineWidth = 5;
+        ctx.setLineDash([20, 20]);
+        ctx.beginPath();
+        ctx.moveTo(ROAD_X - ROAD_WIDTH / 4, 0);
+        ctx.lineTo(ROAD_X - ROAD_WIDTH / 4, canvas.height);
+        ctx.moveTo(ROAD_X + ROAD_WIDTH / 4, 0);
+        ctx.lineTo(ROAD_X + ROAD_WIDTH / 4, canvas.height);
+        ctx.stroke();
+        ctx.setLineDash(); // <--- Corregido: Pasamos un array vacío
+    }
+
+        function drawPlayer() {
+            ctx.fillStyle = 'lime';
+            ctx.fillRect(playerX, PLAYER_Y, PLAYER_WIDTH, PLAYER_HEIGHT);
+        }
+
+        function spawnEnemy() {
+            const x = Math.random() * (ROAD_WIDTH - ENEMY_WIDTH) + (ROAD_X - ROAD_WIDTH / 2);
+            enemyCars.push({ x: x, y: -ENEMY_HEIGHT });
+        }
+
+        function drawEnemies() {
+            ctx.fillStyle = 'red';
+            enemyCars.forEach(enemy => {
+                ctx.fillRect(enemy.x, enemy.y, ENEMY_WIDTH, ENEMY_HEIGHT);
+            });
+        }
+
+        function moveEnemies() {
+            enemyCars.forEach(enemy => {
+                enemy.y += enemySpeed;
+            });
+            enemyCars = enemyCars.filter(enemy => enemy.y < canvas.height);
+        }
+
+        function checkCollision() {
+            for (let i = 0; i < enemyCars.length; i++) {
+                const enemy = enemyCars[i];
+                if (
+                    playerX < enemy.x + ENEMY_WIDTH &&
+                    playerX + PLAYER_WIDTH > enemy.x &&
+                    PLAYER_Y < enemy.y + ENEMY_HEIGHT &&
+                    PLAYER_Y + PLAYER_HEIGHT > enemy.y
+                ) {
+                    gameOver = true;
+                    gameStarted = false;
+                    break;
+                }
+            }
+        }
+
+        function update() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawRoad();
+
+            if (!gameStarted && !gameOver) {
+                startScreen.draw();
+            } else if (gameOver) {
+                gameOverScreen.draw();
+            } else {
+                drawPlayer();
+                drawEnemies();
+                moveEnemies();
+                checkCollision();
+
+                frameCount++;
+                if (frameCount % spawnInterval === 0) {
+                    spawnEnemy();
+                }
+                score = Math.floor(frameCount / 60); // Score basado en tiempo (aproximado)
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        // Event listeners para controles
+        document.addEventListener('keydown', function(event) {
+            if (gameStarted && !gameOver) {
+                if (event.key === 'a' || event.key === 'ArrowLeft') {
+                    playerX -= playerSpeed;
+                    if (playerX < ROAD_X - ROAD_WIDTH / 2 + 15) {
+                        playerX = ROAD_X - ROAD_WIDTH / 2 + 15;
+                    }
+                } else if (event.key === 'd' || event.key === 'ArrowRight') {
+                    playerX += playerSpeed;
+                    if (playerX > ROAD_X + ROAD_WIDTH / 2 - 15 - PLAYER_WIDTH) {
+                        playerX = ROAD_X + ROAD_WIDTH / 2 - 15 - PLAYER_WIDTH;
+                    }
+                }
+            }
+        });
+
+        canvas.addEventListener('mousedown', function(event) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            if (!gameStarted && !gameOver) {
+                startScreen.handleClick(x, y);
+            } else if (gameOver) {
+                gameOverScreen.handleClick(x, y);
+            } else {
+                if (x < canvas.width / 2) {
+                    playerX -= playerSpeed;
+                    if (playerX < ROAD_X - ROAD_WIDTH / 2 + 15) {
+                        playerX = ROAD_X - ROAD_WIDTH / 2 + 15;
+                    }
+                } else {
+                    playerX += playerSpeed;
+                    if (playerX > ROAD_X + ROAD_WIDTH / 2 - 15 - PLAYER_WIDTH) {
+                        playerX = ROAD_X + ROAD_WIDTH / 2 - 15 - PLAYER_WIDTH;
+                    }
+                }
+            }
+        });
+
+        // Iniciar el loop del juego
+        update();
+    </script>
+</body>
+</html>

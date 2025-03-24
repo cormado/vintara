@@ -5,34 +5,163 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        body {
-            background: linear-gradient(135deg, #00bcd4, #1c2526);
-            color: #e0e0e0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px 0;
-        }
-        
-        p {
-            font-size: 100px;
-            color: white;
-            text-align: center;
-            margin-top: 20%;
-            font-family: monospace;
-        }
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #00bcd4, #1c2526); /* Cyan to dark gray/black */
+    color: #e0e0e0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+}
 
-        #sub {
-            font-size: 50px;
-            color: white;
-            text-align: center;
-            font-family: monospace;
-        }
+        /* Header styling */
+header {
+    width: 100%;
+    background: linear-gradient(90deg, #00bcd4, #6a1b9a);
+    padding: 15px 20px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+header ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+header ul li {
+    display: inline;
+}
+
+header ul li a {
+    color: #e0e0e0;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+header ul li a:hover {
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+        /* Container styling */
+.container {
+    width: 80%;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+#title {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#description {
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+/* Footer styling */
+.footer {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 20px 0;
+    text-align: center;
+    margin-top: auto; /* Pushes footer to the bottom */
+}
+
+.footer p {
+    font-size: 0.9rem;
+    color: #9b9b9b;
+    margin-bottom: 10px;
+}
+
+.footer a {
+    color: #9b9b9b;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    color: #ffffff;
+}
+
+.footer img {
+    vertical-align: middle;
+    margin-left: 10px;
+    width: 30px;
+    height: 30px;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    header ul {
+        gap: 15px;
+    }
+
+    header ul li a {
+        font-size: 1rem;
+    }
+
+    .game-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Fewer columns on smaller screens */
+    }
+
+    .container {
+        padding: 15px;
+    }
+
+    .container h1 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-grid {
+        grid-template-columns: 1fr; /* Single column on very small screens */
+    }
+
+    .container {
+        margin: 10px 0;
+    }
+}
     </style>
 </head>
 <body>
-    <p>PROXIMAMENTE</p>
-    <p id="sub">Vintara</p>
+    <header>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/news/home">News</a></li>
+            <li><a href="/about/info">About</a></li>
+        </ul>
+    </header>
+<div class="container">
+    <p id="title">What is vintara.xyz?</p>
+    <p id="description">Vintara.xyz is a website where you can play simple games to avoid boredom in classes, meetings or other boring situations where you don't have a good device to play on.</p>
+    <br>
+    <p id="title">Who can publish a game?</p>
+    <p id="description">Anyone can publish a game on vintara.xyz You can join our discord and open a ticket to request to add your game in our website, it is necessary that the game is made only with html, css and javascript code, you need to have a name, a synopsis and a logo for the game.</p>
+    <p id="title">How i can support Vintara?</p>    
+    <p id="description">You can support Vintara by sharing our website with your friends, disabling your adblocker and joining the discord to have a bigger community</p>
+</div>
+<div class="footer">
+    <footer>
+        <p>VINTARA.XYZ</p>
+        <p><a href="https://discord.gg/h5ZK4wQJMG">DISCORD<img src="discord.png" alt="discord"></a></p>
+    </footer>
+</div>
 </body>
 </html>
